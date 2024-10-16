@@ -1,34 +1,54 @@
 def main():
-    with open("books/frankenstein.txt") as f:
-        file_contents = f.read()
+    book_path = "books/frankenstein.txt"
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
 
+    print(f"--- Begin report of {book_path} ---")
+    print(f"{num_words} words found in the document")
+    print()
 
-def count_words(text):
-    words = text.split()
-    return len(words)
-
-
-def count_letters(path):
-    letters = {}
-    with open(path) as f:
-        file_contents = f.read()
-    for char in file_contents:
-        if char.isalpha():
-            char = char.lower()
-            letters[char] = letters.get(char, 0) + 1
-    return letters
-
-
-def report(path):
-    letters = count_letters(path)
-    print("--- Begin report of books/frankenstein.txt ---")
-    print(f"{count_words(path)} words found in the document")
-    for letter, count in sorted(
-        letters.items(), key=lambda item: item[1], reverse=True
-    ):
-        print(f"The '{letter}' character was found {count} times")
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"The '{item['char']}' character was found {item['num']} times")
 
     print("--- End report ---")
 
 
-report("books/frankenstein.txt")
+def get_num_words(text):
+    words = text.split()
+    return len(words)
+
+
+def sort_on(d):
+    return d["num"]
+
+
+def chars_dict_to_sorted_list(num_chars_dict):
+    sorted_list = []
+    for ch in num_chars_dict:
+        sorted_list.append({"char": ch, "num": num_chars_dict[ch]})
+    sorted_list.sort(reverse=True, key=sort_on)
+    return sorted_list
+
+
+def get_chars_dict(text):
+    chars = {}
+    for c in text:
+        lowered = c.lower()
+        if lowered in chars:
+            chars[lowered] += 1
+        else:
+            chars[lowered] = 1
+    return chars
+
+
+
+def get_book_text(path):
+    with open(path) as f:
+        return f.read()
+
+
+main()
